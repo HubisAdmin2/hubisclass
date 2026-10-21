@@ -19,12 +19,9 @@
 #include <string>
 #include <fstream>
 #include "arial_font.h"
-#include "rose_emoji.h"
 
 static bool show_about = false;
 static bool show_reset_confirm = false;
-static bool use_rose_emoji = false;
-static GLuint rose_emoji_texture = 0;
 static int class_size = 30;
 static int selected_student = 0;
 static bool student_selected = false;
@@ -74,23 +71,6 @@ void ResetStudentPool(int size) {
         std::uniform_int_distribution<int> dist(0, i - 1);
         int j = dist(g);
         std::swap(available_students[i], available_students[j]);
-    }
-    
-    // 31 kişilikse 19'un şansını artır
-    if (size == 31) {
-        // 19'un pozisyonunu bul
-        auto it = std::find(available_students.begin(), available_students.end(), 19);
-        if (it != available_students.end()) {
-            int pos_19 = it - available_students.begin();
-            // Eğer son 15 içindeyse, %0.001 ihtimalle ilk 10'a taşı
-            if (pos_19 >= size - 15) {
-                std::uniform_real_distribution<double> chance(0.0, 1.0);
-                if (chance(g) < 0.01) { // %1 şans
-                    int new_pos = std::uniform_int_distribution<int>(0, 9)(g);
-                    std::swap(available_students[pos_19], available_students[new_pos]);
-                }
-            }
-        }
     }
 }
 
@@ -190,8 +170,6 @@ int main(int, char**)
     
     font_large = font_normal;
     
-    // Increase font atlas size for emoji support
-    io.Fonts->TexDesiredWidth = 2048;
     io.Fonts->Build();
 
     // LoadData(); // Data yükleme devre dışı
@@ -221,14 +199,6 @@ int main(int, char**)
 
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
-
-    // Rose emoji texture oluştur (OpenGL context başlatıldıktan sonra)
-    glGenTextures(1, &rose_emoji_texture);
-    glBindTexture(GL_TEXTURE_2D, rose_emoji_texture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, rose_emoji_width, rose_emoji_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, rose_emoji_data);
-    glBindTexture(GL_TEXTURE_2D, 0);
 
     ImVec4 clear_color = ImVec4(0.02f, 0.03f, 0.06f, 1.00f);
 
@@ -445,19 +415,8 @@ int main(int, char**)
             
             ImGui::PushFont(font_large);
             ImVec2 textSize = ImGui::CalcTextSize(numStr);
-            
-            // Gül emojisi (use_rose_emoji açıksa, sınıf 31 ve numara 6)
-            if (use_rose_emoji && class_size == 31 && selected_student == 6) {
-                float emoji_size = circle_size * 0.3f;
-                float total_width = textSize.x + emoji_size + 5;
-                ImGui::SetCursorPos(ImVec2((circle_size - total_width) / 2, (circle_size - textSize.y) / 2));
-                ImGui::TextColored(ImVec4(0.35f, 0.80f, 1.00f, 1.00f), "%s", numStr);
-                ImGui::SameLine(0, 5);
-                ImGui::Image((ImTextureID)(intptr_t)rose_emoji_texture, ImVec2(emoji_size, emoji_size));
-            } else {
-                ImGui::SetCursorPos(ImVec2((circle_size - textSize.x) / 2, (circle_size - textSize.y) / 2));
-                ImGui::TextColored(ImVec4(0.35f, 0.80f, 1.00f, 1.00f), "%s", numStr);
-            }
+            ImGui::SetCursorPos(ImVec2((circle_size - textSize.x) / 2, (circle_size - textSize.y) / 2));
+            ImGui::TextColored(ImVec4(0.35f, 0.80f, 1.00f, 1.00f), "%s", numStr);
             ImGui::PopFont();
             
             ImGui::GetIO().FontGlobalScale = original_scale;
