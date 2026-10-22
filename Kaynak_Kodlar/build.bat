@@ -50,7 +50,7 @@ if errorlevel 1 goto error
 
 echo.
 echo Linking...
-g++ -std=c++17 -finput-charset=UTF-8 -fexec-charset=UTF-8 main.o connect.o imgui.o imgui_demo.o imgui_draw.o imgui_tables.o imgui_widgets.o imgui_impl_glfw.o imgui_impl_opengl3.o -L"%GLFW_LIB%" -lglfw3 -lopengl32 -lgdi32 -lws2_32 -lwinhttp -static -static-libgcc -static-libstdc++ -mwindows -o HubisClass.exe
+g++ -std=c++17 -finput-charset=UTF-8 -fexec-charset=UTF-8 main.o connect.o imgui.o imgui_demo.o imgui_draw.o imgui_tables.o imgui_widgets.o imgui_impl_glfw.o imgui_impl_opengl3.o -L"%GLFW_LIB%" -lglfw3 -lopengl32 -lgdi32 -lws2_32 -lwinhttp -static -static-libgcc -static-libstdc++ -o HubisClass.exe
 if errorlevel 1 goto error
 
 echo.

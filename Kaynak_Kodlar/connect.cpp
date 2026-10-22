@@ -21,7 +21,7 @@
 const int CURRENT_VERSION = 1;
 const char* UPDATE_SERVER = "raw.githubusercontent.com";
 const int UPDATE_PORT = 443;
-const char* UPDATE_PATH = "/emirhankurmus3411-sys/hubisclass/main/version.json";
+const char* UPDATE_PATH = "/HubisAdmin2/hubisclass/main/version.json";
 
 // HTTP GET isteği - WinHTTP ile HTTPS desteği (Windows)
 std::string http_get(const char* host, int port, const char* path) {
@@ -396,31 +396,7 @@ void check_for_update() {
     }
 
     printf("[Guncelleme] Dosya indirildi: %s\n", save_path.c_str());
-    
-    // Mevcut exe'yi silmek için script oluştur (Windows/Linux)
-#ifdef _WIN32
-    std::ofstream bat_script("delete_self.bat");
-    bat_script << "@echo off\n";
-    bat_script << "timeout /t 2 /nobreak > nul\n";
-    bat_script << "del \"" << "HubisClass.exe" << "\"\n";
-    bat_script << "del \"%~f0\"\n";
-    bat_script.close();
-    printf("[Guncelleme] Kendi imha scripti olusturuldu (Windows)\n");
-    system("start /min delete_self.bat");
-#else
-    // Linux için shell script
-    std::ofstream sh_script("delete_self.sh");
-    sh_script << "#!/bin/bash\n";
-    sh_script << "sleep 2\n";
-    sh_script << "rm -f \"$0\"\n";
-    sh_script << "rm -f HubisClass.exe\n";
-    sh_script.close();
-    chmod("delete_self.sh", 0755);
-    printf("[Guncelleme] Kendi imha scripti olusturuldu (Linux)\n");
-    system("./delete_self.sh &");
-#endif
-    
-    printf("[Guncelleme] Program kapatiliyor...\n");
+    printf("[Guncelleme] Program kapaniyor...\n");
 
 #ifdef _WIN32
     WSACleanup();
